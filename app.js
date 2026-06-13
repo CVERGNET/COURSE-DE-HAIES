@@ -2,24 +2,27 @@
 // APPLICATION SUIVI 40m HAIES
 // ============================================
 
-// BARÈMES DE MAÎTRISE
+// BARÈMES DE MAÎTRISE - ACTUALISÉS
 const BAREMES = {
     1: {
         label: 'Niveau 1',
         times: [
-            { min: 0, max: 7.99, mastery: 'excellent', label: 'Excellent' },
-            { min: 8.00, max: 8.49, mastery: 'good', label: 'Bon' },
-            { min: 8.50, max: 9.49, mastery: 'average', label: 'Moyen' },
-            { min: 9.50, max: 999, mastery: 'needs_work', label: 'À améliorer' }
+            { min: 0, max: 6.89, mastery: 'excellent', label: 'Très bonne maîtrise' },
+            { min: 6.90, max: 7.10, mastery: 'good', label: 'Maitrise satisfaisante' },
+            { min: 7.11, max: 8.90, mastery: 'average', label: 'Maitrise fragile' },
+            { min: 8.91, max: 9.50, mastery: 'needs_work', label: 'Maitrise insuffisante' },
+            { min: 9.51, max: 999, mastery: 'needs_work', label: 'Maitrise insuffisante' }
         ]
     },
     2: {
         label: 'Niveau 2',
         times: [
-            { min: 0, max: 7.49, mastery: 'excellent', label: 'Excellent' },
-            { min: 7.50, max: 8.29, mastery: 'good', label: 'Bon' },
-            { min: 8.30, max: 9.29, mastery: 'average', label: 'Moyen' },
-            { min: 9.30, max: 999, mastery: 'needs_work', label: 'À améliorer' }
+            { min: 0, max: 6.89, mastery: 'excellent', label: 'Très bonne maîtrise' },
+            { min: 6.90, max: 7.40, mastery: 'good', label: 'Maitrise satisfaisante' },
+            { min: 7.41, max: 8.50, mastery: 'average', label: 'Maitrise fragile' },
+            { min: 8.51, max: 9.00, mastery: 'needs_work', label: 'Maitrise insuffisante' },
+            { min: 9.01, max: 9.50, mastery: 'needs_work', label: 'Maitrise insuffisante' },
+            { min: 9.51, max: 999, mastery: 'needs_work', label: 'Maitrise insuffisante' }
         ]
     }
 };
@@ -108,7 +111,18 @@ class PerformanceApp {
         const tbody = document.getElementById('baremeBody');
         tbody.innerHTML = '';
 
+        // Créer un tableau sans doublons
+        const uniqueBareme = [];
+        const seenMastery = new Set();
+
         bareme.times.forEach(row => {
+            if (!seenMastery.has(row.mastery)) {
+                uniqueBareme.push(row);
+                seenMastery.add(row.mastery);
+            }
+        });
+
+        uniqueBareme.forEach(row => {
             const tr = document.createElement('tr');
             const timeLabel = row.max === 999 ? `> ${row.min}s` : `${row.min}s - ${row.max}s`;
             
@@ -343,10 +357,10 @@ class PerformanceApp {
             <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
                 <h4 style="color: #667eea; margin-bottom: 10px;">Répartition des niveaux de maîtrise</h4>
                 <div style="font-size: 0.9em; line-height: 1.8;">
-                    <p>🏆 Excellent: <strong>${masteryCount.excellent}</strong></p>
-                    <p>✅ Bon: <strong>${masteryCount.good}</strong></p>
-                    <p>⚠️ Moyen: <strong>${masteryCount.average}</strong></p>
-                    <p>❌ À améliorer: <strong>${masteryCount.needs_work}</strong></p>
+                    <p>🏆 Très bonne maîtrise: <strong>${masteryCount.excellent}</strong></p>
+                    <p>✅ Maitrise satisfaisante: <strong>${masteryCount.good}</strong></p>
+                    <p>⚠️ Maitrise fragile: <strong>${masteryCount.average}</strong></p>
+                    <p>❌ Maitrise insuffisante: <strong>${masteryCount.needs_work}</strong></p>
                 </div>
             </div>
         `;
