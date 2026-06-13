@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Suivi 40m Haies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .tabs-container {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            margin-bottom: -2px;
+        }
+
+        .tabs-content {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .level-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .chrono-display {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+            color: #667eea;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .level-label {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .level-1 {
+            background: #e7f3ff;
+            color: #004085;
+            border-left: 4px solid #004085;
+        }
+
+        .level-2 {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #856404;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .mastery-level {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .mastery-excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .mastery-good {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .mastery-average {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .mastery-needs_work {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .delete-row {
+            cursor: pointer;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .delete-row:hover {
+            opacity: 0.7;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card.best {
+            border-left-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card.best .value {
+            color: #28a745;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .no-data p {
+            font-size: 1.1em;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        #successMsg {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #errorMsg {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background: #dee2e6;
+        }
+
+        .level-buttons button {
+            width: 100%;
+        }
+
+        .level-buttons button.selected {
+            background: #28a745;
+            color: white;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .filter-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-row label {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Suivi 40m Haies</h1>
+            <p>Application d'évaluation des performances - <span id="totalCount">0</span> performances enregistrées</p>
+        </header>
+
+        <div class="tabs-container">
+            <button class="tab-button active" onclick="switchTab('recordTab')">📝 Enregistrement</button>
+            <button class="tab-button" onclick="switchTab('viewTab')">📈 Consultations</button>
+            <button class="tab-button" onclick="switchTab('exportTab')">💾 Export</button>
+        </div>
+
+        <div class="tabs-content">
+            <!-- TAB 1: ENREGISTREMENT -->
+            <div id="recordTab" class="tab-content active">
+                <div id="successMsg" class="message"></div>
+                <div id="errorMsg" class="message"></div>
+
+                <h2>Enregistrement d'une performance</h2>
+
+                <form id="studentForm">
+                    <h3 style="margin-top: 25px; margin-bottom: 15px; color: #333;">Profil de l'élève</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studentFirstName">Prénom</label>
+                            <input type="text" id="studentFirstName" placeholder="Ex: Jean">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentLastName">Nom</label>
+                            <input type="text" id="studentLastName" placeholder="Ex: Dupont">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studentClass">Classe</label>
+                            <select id="studentClass">
+                                <option value="">-- Sélectionner une classe --</option>
+                                <option value="6A">6A</option>
+                                <option value="6B">6B</option>
+                                <option value="5A">5A</option>
+                                <option value="5B">5B</option>
+                                <option value="4A">4A</option>
+                                <option value="4B">4B</option>
+                                <option value="3A">3A</option>
+                                <option value="3B">3B</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date">
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top: 25px; margin-bottom: 15px; color: #333;">Sélectionnez le niveau</h3>
+                    <div class="level-buttons">
+                        <button type="button" class="btn-primary" id="levelBtn1" onclick="selectLevel(1)">Niveau 1</button>
+                        <button type="button" class="btn-primary" id="levelBtn2" onclick="selectLevel(2)">Niveau 2</button>
+                    </div>
+
+                    <div id="baremeContainer" style="display: none;">
+                        <h3 id="levelLabel" class="level-label"></h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Temps</th>
+                                    <th>Niveau de maîtrise</th>
+                                </tr>
+                            </thead>
+                            <tbody id="baremeBody"></tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="margin-top: 25px; margin-bottom: 15px; color: #333;">Chronomètre</h3>
+                    <div class="chrono-display" id="chronoDisplay">0.00s</div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                        <button type="button" class="btn-success" id="startBtn" onclick="startChronometer()">▶️ Démarrer</button>
+                        <button type="button" class="btn-primary" id="stopBtn" onclick="stopChronometer()" disabled>⏹️ Arrêter</button>
+                        <button type="button" class="btn-danger" onclick="resetChronometer()">🔄 Réinitialiser</button>
+                    </div>
+
+                    <div id="masteryResult"></div>
+
+                    <button type="button" class="btn-primary" id="saveBtn" onclick="savePerformance()" disabled style="margin-top: 20px;">💾 Enregistrer</button>
+                </form>
+            </div>
+
+            <!-- TAB 2: CONSULTATIONS -->
+            <div id="viewTab" class="tab-content">
+                <h2>Consultations et statistiques</h2>
+
+                <div class="filter-section">
+                    <h3>Filtres</h3>
+                    <div class="filter-row">
+                        <div class="form-group">
+                            <label for="filterClass">Classe</label>
+                            <select id="filterClass">
+                                <option value="">-- Tous les classes --</option>
+                                <option value="6A">6A</option>
+                                <option value="6B">6B</option>
+                                <option value="5A">5A</option>
+                                <option value="5B">5B</option>
+                                <option value="4A">4A</option>
+                                <option value="4B">4B</option>
+                                <option value="3A">3A</option>
+                                <option value="3B">3B</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterStudent">Élève</label>
+                            <select id="filterStudent">
+                                <option value="">-- Tous les élèves --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterLevel">Niveau</label>
+                            <select id="filterLevel">
+                                <option value="">-- Tous les niveaux --</option>
+                                <option value="1">Niveau 1</option>
+                                <option value="2">Niveau 2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="statsContainer"></div>
+                <div id="tableContainer"></div>
+            </div>
+
+            <!-- TAB 3: EXPORT -->
+            <div id="exportTab" class="tab-content">
+                <h2>Export des données</h2>
+
+                <p style="color: #666; margin-bottom: 20px;">Exportez les données filtrées actuellement affichées :</p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 400px;">
+                    <button class="btn-primary" id="exportCSVBtn" onclick="app.exportToCSV()" style="background: #28a745;">📊 CSV</button>
+                    <button class="btn-primary" id="exportJSONBtn" onclick="app.exportToJSON()" style="background: #007bff;">📄 JSON</button>
+                </div>
+
+                <button class="btn-danger" id="deleteAllBtn" onclick="app.showDeleteConfirm()" style="margin-top: 30px; max-width: 400px;">🗑️ Supprimer toutes les données</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h2>⚠️ Confirmation</h2>
+            <p>Êtes-vous sûr(e) de vouloir supprimer <strong>TOUTES</strong> les données ?</p>
+            <p style="font-size: 0.9em; color: #999;">Cette action est irréversible.</p>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+                <button class="btn-danger" onclick="confirmDelete()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
